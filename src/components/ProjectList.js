@@ -1,6 +1,6 @@
 import React from "react";
 import ProjectCard from "./ProjectCard";
-import Projects from "../data/projects";
+
 
 const ProjectList = ({ projects, updateStatus, onSelect }) => {
   return (
