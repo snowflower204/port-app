@@ -1,0 +1,1027 @@
+
+/* ==================================================
+   PORT-APP 2.0
+   PURPLE SCRAPBOOK HOMEPAGE
+   Hannah A. Hontiveros
+
+   Sections:
+   1. Design tokens
+   2. Scrapbook hero
+   3. Notebook background
+   4. Floating interests
+   5. Identity bubbles
+   6. Hero typography
+   7. Rotating center logo
+   8. Featured Highlights folders
+   9. Tablet responsiveness
+   10. Mobile responsiveness
+   11. Reduced motion accessibility
+================================================== */
+
+
+/* ==================================================
+   1. DESIGN TOKENS
+================================================== */
+
+:root {
+  --sb-purple: #7b2ff7;
+  --sb-purple-light: #b98aff;
+  --sb-purple-dark: #542296;
+
+  --sb-dark: #2d183e;
+  --sb-lavender: #eee3ff;
+  --sb-paper: #fcfaff;
+
+  --sb-border: #d9c6f0;
+  --sb-text-muted: #756685;
+}
+
+
+/* ==================================================
+   2. SCRAPBOOK HERO CONTAINER
+================================================== */
+
+.scrapbook-hero {
+  position: relative;
+  padding: 0 3%;
+}
+
+.scrapbook-paper {
+  position: relative;
+  min-height: 780px;
+
+  overflow: hidden;
+  isolation: isolate;
+
+  background: var(--sb-paper);
+
+  border: 1px solid #e8def4;
+  border-radius: 32px;
+}
+
+
+/* ==================================================
+   3. NOTEBOOK BACKGROUND
+================================================== */
+
+.notebook-lines {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+
+  pointer-events: none;
+
+  background-image: repeating-linear-gradient(
+    to bottom,
+    transparent 0,
+    transparent 31px,
+    rgba(123, 47, 247, 0.065) 32px
+  );
+}
+
+
+/* ==================================================
+   4. FLOATING INTEREST LABELS
+
+   These labels move away from the cursor.
+   Movement values come from App.js.
+================================================== */
+
+.interest-field {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  pointer-events: none;
+}
+
+.floating-interest {
+  --push-x: 0px;
+  --push-y: 0px;
+
+  position: absolute;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  white-space: nowrap;
+
+  padding: 6px 11px;
+
+  background: rgba(239, 227, 255, 0.65);
+  border: 1px solid rgba(123, 47, 247, 0.13);
+  border-radius: 5px;
+
+  color: rgba(104, 57, 150, 0.58);
+
+  font-size: 0.7rem;
+  font-weight: 600;
+
+  pointer-events: none;
+
+  transform: translate3d(
+    var(--push-x),
+    var(--push-y),
+    0
+  );
+
+  transition: transform 0.22s ease-out;
+  will-change: transform;
+}
+
+
+/* Interest positions */
+
+.interest-1 {
+  top: 14%;
+  left: 9%;
+}
+
+.interest-2 {
+  top: 24%;
+  right: 8%;
+}
+
+.interest-3 {
+  top: 48%;
+  left: 5%;
+}
+
+.interest-4 {
+  top: 68%;
+  right: 10%;
+}
+
+.interest-5 {
+  top: 9%;
+  right: 29%;
+}
+
+.interest-6 {
+  bottom: 17%;
+  left: 14%;
+}
+
+.interest-7 {
+  top: 38%;
+  right: 4%;
+}
+
+.interest-8 {
+  top: 66%;
+  left: 5%;
+}
+
+.interest-9 {
+  bottom: 10%;
+  right: 25%;
+}
+
+.interest-10 {
+  top: 23%;
+  left: 28%;
+}
+
+.interest-11 {
+  bottom: 7%;
+  left: 37%;
+}
+
+.interest-12 {
+  top: 55%;
+  right: 24%;
+}
+
+
+/* ==================================================
+   5. MAIN IDENTITY BUBBLES
+
+   Innovator
+   Creator
+   Leader
+   Explorer
+
+   Continuous floating animation with hover glow.
+================================================== */
+
+.identity-field {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+
+  pointer-events: none;
+}
+
+.identity-bubble {
+  position: absolute;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 12px 22px;
+
+  background: rgba(255, 255, 255, 0.82);
+
+  border: 1px solid #cca9f1;
+  border-radius: 100px;
+
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+
+  color: #633596;
+
+  font-size: 0.9rem;
+  font-weight: 800;
+  white-space: nowrap;
+
+  box-shadow:
+    0 7px 20px rgba(91, 33, 142, 0.08);
+
+  cursor: default;
+  pointer-events: auto;
+
+  animation: bubbleFloat 5s ease-in-out infinite;
+
+  transition:
+    background 0.3s ease,
+    border-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease;
+}
+
+
+/* Purple glow on hover */
+
+.identity-bubble:hover {
+  background: #f2e6ff;
+  border-color: #873cf3;
+
+  color: var(--sb-purple-dark);
+
+  box-shadow:
+    0 0 0 6px rgba(123, 47, 247, 0.07),
+    0 0 22px rgba(123, 47, 247, 0.36),
+    0 0 45px rgba(185, 138, 255, 0.32);
+}
+
+
+/* Individual identity positions */
+
+.bubble-innovator {
+  top: 27%;
+  left: 13%;
+}
+
+.bubble-creator {
+  top: 23%;
+  right: 13%;
+
+  animation-delay: -1s;
+}
+
+.bubble-leader {
+  bottom: 25%;
+  left: 15%;
+
+  animation-delay: -2s;
+}
+
+.bubble-explorer {
+  bottom: 24%;
+  right: 12%;
+
+  animation-delay: -3s;
+}
+
+
+/* Floating animation */
+
+@keyframes bubbleFloat {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+
+/* ==================================================
+   6. HERO CONTENT AND TYPOGRAPHY
+================================================== */
+
+.scrapbook-hero-content {
+  position: relative;
+  z-index: 2;
+
+  display: flex;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  min-height: 780px;
+  padding: 150px 20px 160px;
+
+  text-align: center;
+
+  pointer-events: none;
+}
+
+
+/* "my name is" */
+
+.scrapbook-intro {
+  color: #735190;
+
+  font-family: Georgia, serif;
+  font-style: italic;
+
+  font-size: 1rem;
+  letter-spacing: 0.09em;
+}
+
+
+/* HANNAH — reduced by 5% */
+
+.scrapbook-hero-content h1 {
+  margin: 15px 0 10px;
+
+  font-size: clamp(
+    4.75rem,
+    14.25vw,
+    13.3rem
+  );
+
+  font-weight: 900;
+  line-height: 0.95;
+  letter-spacing: -0.09em;
+
+  color: var(--sb-dark);
+
+  text-shadow:
+    6px 7px 0 rgba(179, 137, 233, 0.13);
+}
+
+
+/* "just a girl who loves learning" */
+
+.scrapbook-subtitle {
+  margin: 18px 0 30px;
+
+  color: #58377a;
+
+  font-family: Georgia, serif;
+  font-style: italic;
+
+  font-size: clamp(
+    1.2rem,
+    2.3vw,
+    1.8rem
+  );
+}
+
+
+/* Explore button */
+
+.scrapbook-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 25px;
+
+  padding: 13px 22px;
+
+  background: #32213f;
+  color: #ffffff;
+
+  border-radius: 6px;
+
+  font-size: 0.85rem;
+  font-weight: 700;
+
+  box-shadow:
+    5px 5px 0 #cdb0f2;
+
+  pointer-events: auto;
+
+  transition:
+    background 0.3s ease,
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.scrapbook-cta:hover {
+  background: var(--sb-purple);
+
+  transform: translateY(-3px);
+
+  box-shadow:
+    5px 7px 0 #cdb0f2;
+}
+
+
+/* ==================================================
+   7. CENTER LOGO
+
+   Clockwise rotation only.
+   No scroll parallax.
+   No vertical movement.
+   No zooming.
+================================================== */
+
+.hero-center-logo {
+  position: relative;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 16px 0 18px;
+
+  pointer-events: none;
+}
+
+.hero-center-logo-image {
+  display: block;
+
+  width: 85px;
+  height: 85px;
+
+  object-fit: contain;
+
+  transform-origin: center center;
+
+  animation:
+    logoClockwise 8s linear infinite;
+
+  filter: drop-shadow(
+    0 8px 14px rgba(123, 47, 247, 0.22)
+  );
+}
+
+
+/* Continuous clockwise rotation */
+
+@keyframes logoClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+/* ==================================================
+   8. HERO FOOTER
+================================================== */
+
+.scrapbook-hero-footer {
+  position: absolute;
+
+  bottom: 20px;
+  left: 5%;
+  right: 5%;
+
+  z-index: 3;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 20px;
+
+  color: #887399;
+
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+
+/* ==================================================
+   9. FEATURED HIGHLIGHTS SECTION
+================================================== */
+
+.featured-highlights {
+  position: relative;
+
+  padding: 110px 6% 135px;
+}
+
+.featured-heading {
+  max-width: 1200px;
+
+  margin: 0 auto 90px;
+}
+
+.featured-heading h2 {
+  margin: 18px 0 22px;
+
+  font-size: clamp(
+    3rem,
+    7vw,
+    6.5rem
+  );
+
+  line-height: 1.1;
+  letter-spacing: -0.06em;
+
+  color: var(--sb-dark);
+}
+
+.featured-heading h2 em {
+  color: var(--sb-purple);
+
+  font-family:
+    "Playfair Display",
+    Georgia,
+    serif;
+
+  font-weight: 500;
+}
+
+.featured-heading p {
+  color: var(--sb-text-muted);
+
+  font-size: 1rem;
+  line-height: 1.8;
+}
+
+
+/* ==================================================
+   10. FOLDER GRID
+================================================== */
+
+.folder-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(2, minmax(0, 1fr));
+
+  gap: 65px 35px;
+
+  max-width: 1200px;
+
+  margin: auto;
+}
+
+
+/* Folder container */
+
+.feature-folder {
+  position: relative;
+
+  padding-top: 38px;
+
+  will-change: transform;
+
+  transition: filter 0.3s ease;
+}
+
+.feature-folder:hover {
+  filter: drop-shadow(
+    0 15px 25px rgba(123, 47, 247, 0.14)
+  );
+}
+
+
+/* Folder tab */
+
+.folder-tab {
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 48%;
+  height: 60px;
+
+  padding: 15px 25px;
+
+  border-radius: 20px 20px 0 0;
+
+  background: var(--folder-color);
+
+  color: #3d1f5e;
+
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.folder-tab span {
+  position: relative;
+  z-index: 1;
+}
+
+
+/* Folder body */
+
+.folder-body {
+  position: relative;
+  z-index: 1;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 460px;
+
+  padding: 26px;
+
+  background: var(--folder-color);
+
+  border: 1px solid rgba(123, 47, 247, 0.07);
+  border-radius: 0 24px 24px 24px;
+}
+
+
+/* Folder metadata */
+
+.folder-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 20px;
+
+  color: #674587;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.folder-meta span:last-child {
+  font-size: 1.4rem;
+}
+
+
+/* Blank photo placeholder */
+
+.folder-photo-placeholder {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  min-height: 170px;
+
+  gap: 8px;
+
+  background: rgba(255, 255, 255, 0.4);
+
+  border: 1.5px dashed rgba(112, 62, 164, 0.25);
+  border-radius: 13px;
+
+  color: #9276ab;
+}
+
+.folder-photo-placeholder span {
+  font-size: 2.5rem;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.folder-photo-placeholder small {
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+}
+
+
+/* Folder text */
+
+.folder-text {
+  padding: 25px 0 18px;
+}
+
+.folder-category {
+  color: #79539f;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+
+.folder-text h3 {
+  margin: 8px 0 12px;
+
+  color: #351b4a;
+
+  font-size: clamp(
+    2.5rem,
+    4vw,
+    4rem
+  );
+
+  line-height: 1;
+  letter-spacing: -0.06em;
+}
+
+.folder-text p {
+  margin-bottom: 0;
+
+  color: #614878;
+
+  font-size: 0.95rem;
+  line-height: 1.7;
+}
+
+
+/* Folder footer */
+
+.folder-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding-top: 15px;
+
+  border-top:
+    1px solid rgba(109, 61, 151, 0.2);
+
+  color: #704f8f;
+
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+}
+
+.folder-bottom span:last-child {
+  font-size: 1.5rem;
+}
+
+
+/* ==================================================
+   11. FOLDER COLOR VARIATIONS
+================================================== */
+
+.folder-innovator {
+  --folder-color: #dfc5ff;
+}
+
+.folder-creator {
+  --folder-color: #ead8ff;
+}
+
+.folder-leader {
+  --folder-color: #d5b4ff;
+}
+
+.folder-explorer {
+  --folder-color: #e9dcfa;
+}
+
+
+/* ==================================================
+   12. TABLET RESPONSIVENESS
+================================================== */
+
+@media (max-width: 950px) {
+
+  .scrapbook-paper,
+  .scrapbook-hero-content {
+    min-height: 700px;
+  }
+
+  .scrapbook-hero-content h1 {
+    font-size: clamp(
+      4.75rem,
+      14.25vw,
+      9.5rem
+    );
+  }
+
+  .identity-bubble {
+    padding: 10px 15px;
+    font-size: 0.8rem;
+  }
+
+  .bubble-innovator {
+    left: 5%;
+  }
+
+  .bubble-creator {
+    right: 5%;
+  }
+
+  .bubble-leader {
+    left: 5%;
+  }
+
+  .bubble-explorer {
+    right: 5%;
+  }
+
+  .folder-grid {
+    gap: 55px 22px;
+  }
+
+  .folder-body {
+    padding: 20px;
+  }
+
+}
+
+
+/* ==================================================
+   13. MOBILE RESPONSIVENESS
+================================================== */
+
+@media (max-width: 700px) {
+
+  /* HERO */
+
+  .scrapbook-paper {
+    min-height: 690px;
+    border-radius: 22px;
+  }
+
+  .scrapbook-hero-content {
+    min-height: 690px;
+    padding: 200px 12px 170px;
+  }
+
+  .scrapbook-hero-content h1 {
+    font-size: clamp(
+      3.61rem,
+      16.15vw,
+      6.175rem
+    );
+  }
+
+  .scrapbook-subtitle {
+    font-size: 1.1rem;
+  }
+
+  /* Center rotating logo */
+
+  .hero-center-logo-image {
+    width: 58px;
+    height: 58px;
+  }
+
+  /* IDENTITY BUBBLES */
+
+  .identity-bubble {
+    padding: 8px 11px;
+    font-size: 0.68rem;
+  }
+
+  .bubble-innovator {
+    top: 15%;
+    left: 6%;
+  }
+
+  .bubble-creator {
+    top: 19%;
+    right: 5%;
+  }
+
+  .bubble-leader {
+    bottom: 22%;
+    left: 7%;
+  }
+
+  .bubble-explorer {
+    bottom: 25%;
+    right: 5%;
+  }
+
+  /* INTEREST TAGS */
+
+  .floating-interest {
+    padding: 5px 7px;
+
+    font-size: 0.55rem;
+    opacity: 0.55;
+  }
+
+  .interest-1 {
+    top: 7%;
+    left: 9%;
+  }
+
+  .interest-2 {
+    top: 12%;
+    right: 8%;
+  }
+
+  .interest-3 {
+    top: 38%;
+    left: 2%;
+  }
+
+  .interest-4 {
+    top: 65%;
+    right: 4%;
+  }
+
+  .interest-5 {
+    top: 7%;
+    right: 37%;
+  }
+
+  .interest-6 {
+    bottom: 11%;
+    left: 9%;
+  }
+
+  .interest-7 {
+    top: 46%;
+    right: 2%;
+  }
+
+  .interest-8 {
+    top: 64%;
+    left: 4%;
+  }
+
+  .interest-9 {
+    bottom: 7%;
+    right: 22%;
+  }
+
+  .interest-10 {
+    top: 27%;
+    left: 11%;
+  }
+
+  .interest-11 {
+    bottom: 9%;
+    left: 37%;
+  }
+
+  .interest-12 {
+    top: 50%;
+    right: 9%;
+  }
+
+  /* HERO FOOTER */
+
+  .scrapbook-hero-footer {
+    font-size: 0.5rem;
+  }
+
+  /* FEATURED HIGHLIGHTS */
+
+  .featured-highlights {
+    padding: 80px 6% 100px;
+  }
+
+  .featured-heading {
+    margin-bottom: 55px;
+  }
+
+  .folder-grid {
+    grid-template-columns: 1fr;
+    gap: 45px;
+  }
+
+  .folder-body {
+    min-height: 420px;
+  }
+
+  .folder-text h3 {
+    font-size: 2.8rem;
+  }
+
+}
+
+
+/* ==================================================
+   14. REDUCED MOTION ACCESSIBILITY
+================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .identity-bubble {
+    animation: none;
+    transition: none;
+  }
+
+  .floating-interest {
+    transform: none !important;
+    transition: none;
+    will-change: auto;
+  }
+
+  .feature-folder {
+    transform: none !important;
+    will-change: auto;
+  }
+
+  .hero-center-logo-image {
+    animation: none;
+    transform: none !important;
+  }
+
+}

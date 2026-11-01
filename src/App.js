@@ -1,76 +1,152 @@
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import "./homepage.css";
+import "./scrapbook.css";
 
-const journeys = [
+// ========================================
+// FEATURED HIGHLIGHTS DATA
+// ========================================
+
+const featuredFolders = [
   {
-    number: "01",
-    name: "Inventor",
-    intro: "I'm an Inventor",
-    quote: "I build projects and learn from challenges.",
-    imageLabel: "Inventor photograph",
-    className: "inventor",
+    id: "01",
+    title: "Innovator",
+    description: "I imagine possibilities and build solutions.",
+    category: "IDEAS & INNOVATION",
+    className: "folder-innovator",
   },
   {
-    number: "02",
-    name: "Researcher",
-    intro: "I'm a Researcher",
-    quote: "I question and explore the possibilities.",
-    imageLabel: "Researcher photograph",
-    className: "researcher",
+    id: "02",
+    title: "Creator",
+    description: "I turn ideas into meaningful experiences.",
+    category: "DESIGN & CREATIVITY",
+    className: "folder-creator",
   },
   {
-    number: "03",
-    name: "Leader",
-    intro: "I'm Also a Leader",
-    quote: "I inspire youth and care for my community.",
-    imageLabel: "Leader photograph",
-    className: "leader",
+    id: "03",
+    title: "Leader",
+    description: "I bring people together and empower them.",
+    category: "COMMUNITY & IMPACT",
+    className: "folder-leader",
+  },
+  {
+    id: "04",
+    title: "Explorer",
+    description: "I learn, discover, and grow beyond boundaries.",
+    category: "LEARNING & DISCOVERY",
+    className: "folder-explorer",
   },
 ];
 
-function PhotoPlaceholder({ label, className = "" }) {
-  return (
-    <div className={`photo-placeholder ${className}`}>
-      <span className="photo-placeholder-icon" aria-hidden="true">
-        +
-      </span>
-      <span>{label}</span>
-      <small>Photo coming soon</small>
-    </div>
-  );
-}
+// ========================================
+// FLOATING INTEREST LABELS
+// ========================================
+
+const floatingInterests = [
+  { name: "Web Dev", className: "interest-1" },
+  { name: "Machine Learning", className: "interest-2" },
+  { name: "Data Analysis", className: "interest-3" },
+  { name: "Cloud", className: "interest-4" },
+  { name: "Quantum", className: "interest-5" },
+  { name: "Robotics", className: "interest-6" },
+  { name: "Research", className: "interest-7" },
+  { name: "Startups", className: "interest-8" },
+  { name: "Community", className: "interest-9" },
+  { name: "Mentoring", className: "interest-10" },
+  { name: "Design", className: "interest-11" },
+  { name: "Innovation", className: "interest-12" },
+];
+
+// ========================================
+// MAIN APPLICATION
+// ========================================
 
 function App() {
   const [scrollY, setScrollY] = useState(0);
+  const [folderProgress, setFolderProgress] = useState(0);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const heroRef = useRef(null);
+  const highlightsRef = useRef(null);
+
+  // ========================================
+  // ACCESSIBILITY: REDUCED MOTION
+  // ========================================
+
+  const prefersReducedMotion =
+    typeof window !== "undefined" &&
+    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ========================================
+  // SCROLL TRACKING AND PARALLAX
+  // ========================================
 
   useEffect(() => {
     let frame = null;
 
-    function handleScroll() {
+    function updateScroll() {
       if (frame !== null) return;
 
       frame = window.requestAnimationFrame(() => {
-        setScrollY(window.scrollY);
+        const currentScroll = window.scrollY;
+
+        setScrollY(currentScroll);
+
+        // Calculate parallax relative to Highlights.
+        if (highlightsRef.current) {
+          const rect =
+            highlightsRef.current.getBoundingClientRect();
+
+          const viewportHeight = window.innerHeight;
+
+          const progress =
+            (viewportHeight * 0.6 - rect.top) /
+            viewportHeight;
+
+          setFolderProgress(
+            Math.max(-1, Math.min(1, progress))
+          );
+        }
+
         frame = null;
       });
     }
 
-    window.addEventListener("scroll", handleScroll, {
+    window.addEventListener("scroll", updateScroll, {
       passive: true,
     });
 
+    updateScroll();
+
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", updateScroll);
+
       if (frame !== null) {
         window.cancelAnimationFrame(frame);
       }
     };
   }, []);
 
+  // ========================================
+  // SECTION REVEAL ANIMATION
+  // ========================================
+
   useEffect(() => {
-    if (!("IntersectionObserver" in window)) return;
+    const elements =
+      document.querySelectorAll(".reveal");
+
+    if (
+      !("IntersectionObserver" in window) ||
+      window.matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      ).matches
+    ) {
+      elements.forEach((element) => {
+        element.classList.add("is-visible");
+      });
+
+      return;
+    }
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -81,19 +157,98 @@ function App() {
           }
         });
       },
-      { threshold: 0.12 }
+      {
+        threshold: 0.12,
+      }
     );
 
-    const elements = document.querySelectorAll(".reveal");
-    elements.forEach((element) => observer.observe(element));
+    elements.forEach((element) => {
+      observer.observe(element);
+    });
 
     return () => observer.disconnect();
   }, []);
 
+  // ========================================
+  // CURSOR REPULSION EFFECT
+  // ========================================
+
+  function handleHeroMouseMove(event) {
+    if (
+      event.pointerType === "touch" ||
+      prefersReducedMotion
+    ) {
+      return;
+    }
+
+    const labels =
+      heroRef.current?.querySelectorAll(
+        ".floating-interest"
+      );
+
+    if (!labels) return;
+
+    const radius = 180;
+
+    labels.forEach((label) => {
+      const rect = label.getBoundingClientRect();
+
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const distanceX = centerX - event.clientX;
+      const distanceY = centerY - event.clientY;
+
+      const distance = Math.sqrt(
+        distanceX * distanceX +
+        distanceY * distanceY
+      );
+
+      if (distance < radius) {
+        const safeDistance = Math.max(distance, 1);
+
+        const strength =
+          (1 - distance / radius) * 48;
+
+        const moveX =
+          (distanceX / safeDistance) * strength;
+
+        const moveY =
+          (distanceY / safeDistance) * strength;
+
+        label.style.setProperty(
+          "--push-x",
+          `${moveX}px`
+        );
+
+        label.style.setProperty(
+          "--push-y",
+          `${moveY}px`
+        );
+      } else {
+        label.style.setProperty("--push-x", "0px");
+        label.style.setProperty("--push-y", "0px");
+      }
+    });
+  }
+
+  function resetHeroInterests() {
+    const labels =
+      heroRef.current?.querySelectorAll(
+        ".floating-interest"
+      );
+
+    labels?.forEach((label) => {
+      label.style.setProperty("--push-x", "0px");
+      label.style.setProperty("--push-y", "0px");
+    });
+  }
+
+  // ========================================
+  // LOGO ANIMATION
+  // ========================================
+
   const moveLogo = Math.min(scrollY, 850);
-  const prefersReducedMotion =
-    typeof window !== "undefined" &&
-    window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   const logoStyle = prefersReducedMotion
     ? {}
@@ -105,225 +260,442 @@ function App() {
         `,
       };
 
+  const aboutLogoStyle = prefersReducedMotion
+    ? {}
+    : {
+        transform: `
+          translate3d(
+            0,
+            ${Math.max(
+              -65,
+              Math.min(
+                65,
+                (scrollY - 1000) * 0.08
+              )
+            )}px,
+            0
+          )
+          rotate(
+            ${Math.max(
+              -20,
+              Math.min(
+                20,
+                (scrollY - 1000) * 0.025
+              )
+            )}deg
+          )
+        `,
+      };
+
+  // ========================================
+  // FOLDER PARALLAX
+  // ========================================
+
+  function folderParallax(index) {
+    if (prefersReducedMotion) return {};
+
+    const direction = index % 2 === 0 ? 1 : -1;
+
+    return {
+      transform: `translate3d(
+        0,
+        ${folderProgress * direction * 28}px,
+        0
+      )`,
+    };
+  }
+
   function closeMenu() {
     setMobileMenuOpen(false);
   }
 
+  // ========================================
+  // WEBSITE
+  // ========================================
+
   return (
     <div className="portfolio-site">
-      {/* NAVIGATION */}
+
+      {/* ===================================
+          NAVIGATION
+      =================================== */}
+
       <header className="site-header">
-        <a className="site-brand" href="#home" onClick={closeMenu}>
+
+        <a
+          className="site-brand"
+          href="#home"
+          onClick={closeMenu}
+        >
           HAH<span>.</span>
         </a>
 
         <button
           className="mobile-menu-button"
           type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-expanded={mobileMenuOpen}
           aria-label="Toggle navigation"
+          aria-expanded={mobileMenuOpen}
+          aria-controls="main-navigation"
+          onClick={() =>
+            setMobileMenuOpen(!mobileMenuOpen)
+          }
         >
           {mobileMenuOpen ? "Close" : "Menu"}
         </button>
 
-        <nav className={`site-nav ${mobileMenuOpen ? "open" : ""}`}>
-          <a href="#home" onClick={closeMenu}>Home</a>
-          <a href="#about" onClick={closeMenu}>About</a>
-          <a href="#journeys" onClick={closeMenu}>Explore</a>
-          <a href="#contact" onClick={closeMenu}>Contact</a>
+        <nav
+          id="main-navigation"
+          className={`site-nav ${
+            mobileMenuOpen ? "open" : ""
+          }`}
+          aria-label="Main navigation"
+        >
+          <a href="#home" onClick={closeMenu}>
+            Home
+          </a>
+
+          <a href="#highlights" onClick={closeMenu}>
+            Highlights
+          </a>
+
+          <a href="#about" onClick={closeMenu}>
+            About
+          </a>
+
+          <a href="#contact" onClick={closeMenu}>
+            Contact
+          </a>
         </nav>
+
       </header>
 
       <main>
-        {/* HERO */}
-        <section id="home" className="hero-section">
-          <div className="hero-panel">
-            <div className="hero-decor hero-decor-one" />
-            <div className="hero-decor hero-decor-two" />
 
-            <div className="hero-content">
-              <span className="eyebrow hero-eyebrow">
-                WELCOME TO MY DIGITAL SPACE
-              </span>
+        {/* ===================================
+            SECTION 1: SCRAPBOOK HERO
+        =================================== */}
 
-              <h1>
-                Hi, I'm
-                <br />
-                <span>Hannah.</span>
-              </h1>
+        <section
+          id="home"
+          className="scrapbook-hero"
+          ref={heroRef}
+          onPointerMove={handleHeroMouseMove}
+          onPointerLeave={resetHeroInterests}
+        >
 
-              <p className="hero-tagline">
-                I create. I discover. I empower.
-              </p>
+          <div className="scrapbook-paper">
 
-              <p className="hero-description">
-                An Information Technology student exploring the
-                possibilities of emerging technologies, scientific
-                research, and community-driven innovation.
-              </p>
+            {/* Notebook background */}
 
-              <a className="hero-link" href="#about">
-                Discover my story <span aria-hidden="true">↗</span>
-              </a>
+            <div
+              className="notebook-lines"
+              aria-hidden="true"
+            />
+
+            {/* FLOATING INTEREST WORDS */}
+
+            <div
+              className="interest-field"
+              aria-hidden="true"
+            >
+              {floatingInterests.map((interest) => (
+                <span
+                  key={interest.name}
+                  className={`floating-interest ${interest.className}`}
+                >
+                  {interest.name}
+                </span>
+              ))}
             </div>
 
-            <div className="hero-art" aria-label="Portfolio logo">
-              <div className="logo-halo" />
-              <div className="logo-orbit logo-orbit-one" />
-              <div className="logo-orbit logo-orbit-two" />
+            {/* FOUR MAIN IDENTITY BUBBLES */}
+
+            <div className="identity-field">
+
+              <span className="identity-bubble bubble-innovator">
+                ✳ Innovator
+              </span>
+
+              <span className="identity-bubble bubble-creator">
+                ✦ Creator
+              </span>
+
+              <span className="identity-bubble bubble-leader">
+                ✳ Leader
+              </span>
+
+              <span className="identity-bubble bubble-explorer">
+                ✦ Explorer
+              </span>
+
+            </div>
+
+            {/* HERO TITLE */}
+
+            <div className="scrapbook-hero-content">
+
+              <span className="scrapbook-intro">
+                my name is
+              </span>
+
+              <h1>HANNAH</h1>
+
+              <div className="hero-center-logo">
+                 <img
+                   src="/logo.png"
+                   alt="Hannah's portfolio logo"
+                   className="hero-center-logo-image"
+                   
+                  />
+               </div>
+
+              <p className="scrapbook-subtitle">
+                just a girl who loves learning
+              </p>
+
+              <a
+                href="#highlights"
+                className="scrapbook-cta"
+              >
+                Explore my world
+                <span aria-hidden="true">↗</span>
+              </a>
+
+            </div>
+
+          
+
+            {/* HERO FOOTER */}
+
+            <div className="scrapbook-hero-footer">
+
+              <span>HANNAH A. HONTIVEROS</span>
+
+              <span>SCROLL TO EXPLORE ↓</span>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        {/* ===================================
+            SECTION 2: FEATURED HIGHLIGHTS
+        =================================== */}
+
+        <section
+          id="highlights"
+          className="featured-highlights"
+          ref={highlightsRef}
+        >
+
+          <div className="featured-heading reveal">
+
+            <span className="eyebrow">
+              01 / THE COLLECTION
+            </span>
+
+            <h2>
+              Featured <em>Highlights.</em>
+            </h2>
+
+            <p>
+              A little collection of the things
+              that make me, me.
+            </p>
+
+          </div>
+
+          <div className="folder-grid">
+
+            {featuredFolders.map((folder, index) => (
+
+              <article
+                key={folder.id}
+                className={`feature-folder ${folder.className}`}
+                style={folderParallax(index)}
+              >
+
+                <div className="folder-tab">
+                  <span>{folder.title}</span>
+                </div>
+
+                <div className="folder-body">
+
+                  <div className="folder-meta">
+                    <span>
+                      FILE {folder.id} / 04
+                    </span>
+
+                    <span aria-hidden="true">✳</span>
+                  </div>
+
+                  {/* PHOTO PLACEHOLDER */}
+
+                  <div className="folder-photo-placeholder">
+                    <span aria-hidden="true">+</span>
+                    <small>ADD PHOTO LATER</small>
+                  </div>
+
+                  {/* FOLDER CONTENT */}
+
+                  <div className="folder-text">
+
+                    <span className="folder-category">
+                      {folder.category}
+                    </span>
+
+                    <h3>{folder.title}</h3>
+
+                    <p>{folder.description}</p>
+
+                  </div>
+
+                  <div className="folder-bottom">
+
+                    <span>MORE TO DISCOVER</span>
+
+                    <span aria-hidden="true">
+                      ↗
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </article>
+
+            ))}
+
+          </div>
+
+        </section>
+
+
+        {/* ===================================
+            SECTION 3: ABOUT ME
+        =================================== */}
+
+        <section
+          id="about"
+          className="about-section section-spacing"
+        >
+
+          <div className="section-heading reveal">
+
+            <span className="eyebrow">
+              02 / THE PERSON
+            </span>
+
+            <h2>
+              A Little <em>About Me.</em>
+            </h2>
+
+          </div>
+
+          <div className="about-layout">
+
+            {/* PORTRAIT */}
+
+            <div className="about-photo-frame reveal">
+
+              <img
+                src="/images/hannah-portrait.png"
+                alt="Hannah Hontiveros"
+                className="portrait-image"
+              />
+
+              {/* FLOATING DECORATIVE LOGO */}
 
               <img
                 src="/logo.png"
-                alt="Hannah's portfolio logo"
-                className="hero-logo"
-                style={logoStyle}
+                alt=""
+                aria-hidden="true"
+                className="about-floating-logo"
+                style={aboutLogoStyle}
               />
+
             </div>
 
-            <div className="hero-bottom">
-              <span>PORTFOLIO / 2026</span>
-              <a href="#about">SCROLL TO EXPLORE ↓</a>
-            </div>
-          </div>
-        </section>
+            {/* BIOGRAPHY */}
 
-          
-{/* ABOUT */}
-<section id="about" className="about-section section-spacing">
-  <div className="section-heading reveal">
-    <span className="eyebrow">01 / THE PERSON</span>
-    <h2>A Little <em>About Me.</em></h2>
-  </div>
+            <div className="about-story glass-panel reveal">
 
-  <div className="about-layout">
-    <div className="about-photo-frame reveal">
-      <img
-        src="/images/hannah-portrait.png"
-        alt="Hannah Hontiveros"
-        className="portrait-image"
-      />
+              <span className="eyebrow">
+                HELLO, WORLD!
+              </span>
 
-      {/* Decorative logo with scroll movement */}
-      <img
-        src="/logo.png"
-        alt=""
-        aria-hidden="true"
-        className="about-floating-logo"
-        style={
-          prefersReducedMotion
-            ? {}
-            : {
-                transform: `translate3d(0, ${
-                  Math.max(-65, Math.min(65, (scrollY - 1000) * 0.08))
-                }px, 0) rotate(${
-                  Math.max(-20, Math.min(20, (scrollY - 1000) * 0.025))
-                }deg)`,
-              }
-        }
-      />
-    </div>
-
-    <div className="about-story glass-panel reveal">
-      <span className="eyebrow">HELLO, WORLD!</span>
-
-      <h3>
-        Genius? No.
-        <br />
-        <span>Curious? Always.</span>
-      </h3>
-
-      <p>
-        Hi! I'm Hannah A. Hontiveros, but you can call me Hann.
-      </p>
-
-      <p>
-        I'm an Information Technology student, researcher, and
-        startup builder who loves turning ideas into solutions.
-        My interests lie in software development, data, networks,
-        and emerging technologies. I enjoy exploring how technology
-        works and finding ways to make it useful in everyday life.
-      </p>
-
-      <p>
-        Beyond building projects, I also enjoy bringing people
-        together. Through mentoring, tutoring, organizing events,
-        and leading student communities, I help young people
-        discover opportunities and build confidence in technology.
-      </p>
-
-      <p>
-        I'm still learning, experimenting, and figuring things
-        out along the way. Whether I'm developing a new idea,
-        working on research, or helping someone take their first
-        step into tech, I want my work to create something
-        meaningful.
-      </p>
-
-      <a className="text-link" href="#journeys">
-        Get to know me <span aria-hidden="true">↗</span>
-      </a>
-    </div>
-  </div>
-</section>
-
-
-        {/* THREE IDENTITIES */}
-        <section id="journeys" className="journey-section section-spacing">
-          <div className="journey-intro reveal">
-            <div>
-              <span className="eyebrow">02 / EXPLORE</span>
-              <h2>
-                Three Things
+              <h3>
+                Genius? No.
                 <br />
-                <em>About Me.</em>
-              </h2>
+                <span>Curious? Always.</span>
+              </h3>
+
+              <p>
+                Hi! I'm Hannah A. Hontiveros,
+                but you can call me Hann.
+              </p>
+
+              <p>
+                I'm an Information Technology student,
+                researcher, and startup builder who
+                loves turning ideas into solutions.
+                My interests lie in software development,
+                data, networks, and emerging technologies.
+                I enjoy exploring how technology works
+                and finding ways to make it useful
+                in everyday life.
+              </p>
+
+              <p>
+                Beyond building projects, I also enjoy
+                bringing people together. Through
+                mentoring, tutoring, organizing events,
+                and leading student communities,
+                I help young people discover opportunities
+                and build confidence in technology.
+              </p>
+
+              <p>
+                I'm still learning, experimenting,
+                and figuring things out along the way.
+                Whether I'm developing a new idea,
+                working on research, or helping someone
+                take their first step into tech,
+                I want my work to create something
+                meaningful.
+              </p>
+
+              <a
+                className="text-link"
+                href="#highlights"
+              >
+                Explore my highlights
+                <span aria-hidden="true">↗</span>
+              </a>
+
             </div>
 
-            <p>
-              Three perspectives, one journey.
-              A little glimpse into the different sides of who I am.
-            </p>
           </div>
 
-          <div className="journey-grid">
-            {journeys.map((journey) => (
-              <article
-                key={journey.number}
-                className={`journey-card ${journey.className} reveal`}
-              >
-                <div className="journey-card-top">
-                  <span>{journey.number} / 03</span>
-                  <span className="journey-symbol" aria-hidden="true">
-                    ✳
-                  </span>
-                </div>
-
-                <div className="journey-photo">
-                  <PhotoPlaceholder label={journey.imageLabel} />
-                </div>
-
-                <div className="journey-card-content">
-                  <span className="journey-small-title">{journey.intro}</span>
-                  <h3>{journey.name}</h3>
-                  <p>"{journey.quote}"</p>
-                </div>
-
-                <div className="journey-card-footer">
-                  <span>CHAPTER COMING SOON</span>
-                  <span className="journey-arrow" aria-hidden="true">
-                    ↗
-                  </span>
-                </div>
-              </article>
-            ))}
-          </div>
         </section>
 
-        {/* CONTACT */}
-        <section id="contact" className="contact-section">
+
+        {/* ===================================
+            SECTION 4: CONTACT
+        =================================== */}
+
+        <section
+          id="contact"
+          className="contact-section"
+        >
+
           <div className="contact-panel reveal">
-            <span className="eyebrow">03 / THE NEXT CHAPTER</span>
+
+            <span className="eyebrow">
+              03 / THE NEXT CHAPTER
+            </span>
 
             <h2>
               Let's build
@@ -332,8 +704,9 @@ function App() {
             </h2>
 
             <p>
-              I'm always open to meaningful conversations, learning
-              opportunities, research collaborations, and ideas
+              I'm always open to meaningful
+              conversations, learning opportunities,
+              research collaborations, and ideas
               that can make a difference.
             </p>
 
@@ -346,19 +719,40 @@ function App() {
               Explore my GitHub ↗
             </a>
 
-            <div className="contact-decoration" aria-hidden="true">
+            <div
+              className="contact-decoration"
+              aria-hidden="true"
+            >
               ✳
             </div>
+
           </div>
+
         </section>
+
       </main>
 
-      {/* FOOTER */}
+
+      {/* ===================================
+          FOOTER
+      =================================== */}
+
       <footer className="site-footer">
-        <span>© {new Date().getFullYear()} Hannah A. Hontiveros</span>
-        <span>Made with curiosity & creativity.</span>
-        <a href="#home">Back to top ↑</a>
+
+        <span>
+          © {new Date().getFullYear()} Hannah A. Hontiveros
+        </span>
+
+        <span>
+          Made with curiosity & creativity.
+        </span>
+
+        <a href="#home">
+          Back to top ↑
+        </a>
+
       </footer>
+
     </div>
   );
 }
