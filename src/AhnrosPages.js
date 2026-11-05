@@ -30,7 +30,8 @@ const PROJECTS = [
   {
     title: "MyNaga Health Application", kind: "Health & community", icon: "♡",
     images: ["mynaga.png"],
-    text: "A health-focused application developed during the MyNaga Hackathon. User interviews and beta testing helped identify community needs and shape an accessible digital health solution."
+    text: "A health-focused application developed during the MyNaga Hackathon. User interviews and beta testing helped identify community needs and shape an accessible digital health solution.",
+    award: "Top 15 · MyNaga Hackathon Innovation — 2026"
   },
   {
     title: "FIFA 20 Machine-Learning Project", kind: "Data & machine learning", icon: "✧",
