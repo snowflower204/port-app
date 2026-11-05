@@ -17,8 +17,8 @@ const FOLDERS = [
 ];
 const INTERESTS = ["Web Dev","Machine Learning","Data Analysis","Cloud","Quantum","Robotics","Research","Startups","Community","Mentoring","Design","Innovation"];
 const COLLAB = [
-  ["Build with Me","IDEAS INTO REALITY","Have an idea worth building? Let's turn curiosity into something meaningful.", "mailto:ahnros.connect@gmail.com?subject=Build%20Collaboration%20Inquiry"],
-  ["Lead with Me","PEOPLE & PURPOSE","Great things happen when people come together. Let's lead with purpose.", "mailto:ahnros.connect@gmail.com?subject=Leadership%20Collaboration%20Inquiry"],
+  ["Build with Me","IDEAS INTO REALITY","Have an idea worth building? Let's turn curiosity into something meaningful.", "/build"],
+  ["Lead with Me","PEOPLE & PURPOSE","Great things happen when people come together. Let's lead with purpose.", "/lead"],
   ["Connect with Me","MEANINGFUL CONVERSATIONS","Every meaningful connection starts with a conversation.", PROFILE.linkedin],
 ];
 const qrSource = "https://api.qrserver.com/v1/create-qr-code/?size=260x260&margin=16&data=" + encodeURIComponent(PROFILE.url);
@@ -180,7 +180,7 @@ export default function AhnrosApp() {
       <section id="contact" className="ahn-contact">
         <div className="ahn-calling-card reveal">
           <div className="ahn-card-top"><strong>Ahnros<span>.</span></strong><small>LET'S CONNECT ✳</small></div>
-          <div className="ahn-card-main"><div><span className="eyebrow">A LITTLE CARD FROM ME TO YOU</span><h2>Hannah A.<br/><em>Hontiveros.</em></h2><p>Build, Lead and Connect with BLC Ahnros</p></div>
+          <div className="ahn-card-main"><div><span className="eyebrow">A LITTLE CARD FROM ME TO YOU</span><h2>Hannah A.<br/><em>Hontiveros.</em></h2><p>Build, Lead and Connect</p></div>
             <div className="ahn-details"><a href={`mailto:${PROFILE.email}`}>{PROFILE.email}</a><a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn ↗</a><a href={PROFILE.github} target="_blank" rel="noopener noreferrer">GitHub ↗</a><button type="button" onClick={async()=>{try{await copyValue(PROFILE.email);setEmailStatus("Email copied!");}catch{setEmailStatus("Copy unavailable. Select the email above.");}}}>Copy Email</button><span className="ahn-feedback" role="status">{emailStatus}</span></div>
           </div>
           <div className="ahn-card-bottom"><a href={COLLAB[0][3]}>Build with Me ↗</a><a href={COLLAB[1][3]}>Lead with Me ↗</a><a href={PROFILE.linkedin} target="_blank" rel="noopener noreferrer">Connect with Me ↗</a><button type="button" onClick={()=>setDialog(true)}>Share Portfolio + QR ↗</button></div>
