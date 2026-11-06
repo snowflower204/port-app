@@ -133,15 +133,10 @@ html { scroll-behavior: smooth; }
 }
 
 /* =============================================================
-   Featured Highlights / reliable stacked-folder scroll behavior
-   The normal flow reserves a short "reading interval" after each
-   folder. When scrolled, newer sticky folders overlap older ones.
-   No JS scroll listener, transforms, or scroll-linked animations.
+   Highlights: compact overlapping sticky folder stack
+   Sticky is CSS-only (no scroll handlers or JS animation).
+   Earlier tabs peek out above later folders as you scroll.
 ============================================================= */
-
-/* Unlike hidden, clip does not introduce a scrolling ancestor that
-   can interfere with position: sticky in some browser layouts. */
-html, body { overflow-x: clip; }
 .ahnros-site { overflow: visible; }
 .ahnros-site .featured-highlights,
 .ahnros-site .folder-grid { overflow: visible; }
@@ -150,37 +145,38 @@ html, body { overflow-x: clip; }
   .ahnros-site .folder-grid {
     display: flex;
     flex-direction: column;
-    align-items: stretch;
     gap: 0;
-    padding-bottom: clamp(190px, 36vh, 350px);
+    align-items: stretch;
+    padding-bottom: 40px;
   }
   .ahnros-site .feature-folder {
     position: sticky;
-    top: calc(90px + var(--folder-index) * 11px);
+    /* Each folder stops a little lower so older tabs stay visible. */
+    top: calc(92px + var(--folder-index) * clamp(19px, 2.7vh, 28px));
     z-index: calc(10 + var(--folder-index));
-    margin: 0;
+    width: 100%;
     padding-top: 50px;
+    margin: 0;
     transform: none;
     will-change: auto;
+    transition: none;
+    filter: none;
   }
   .ahnros-site .feature-folder:not(:first-child) {
-    margin-top: 0;
+    /* Close-together scrapbook pages; NO giant blank scroll gaps. */
+    margin-top: -14px;
   }
   .ahnros-site .feature-folder:not(:last-child) {
-    margin-bottom: clamp(125px, 24vh, 250px);
+    margin-bottom: 0;
   }
-  /* When the browser height is limited, keep the sticky folder
-     within the viewable area without disabling the whole effect. */
   .ahnros-site .folder-body { min-height: 440px; }
   .ahnros-site .ahn-polaroid { backface-visibility: hidden; }
 }
 
 @media (max-width: 700px), (max-height: 560px) {
   .ahnros-site .folder-grid { padding-bottom: 10px; }
+  .ahnros-site .feature-folder { position: relative; top: auto; }
   .ahnros-site .feature-folder:not(:last-child) { margin-bottom: 10px; }
 }
 
-/* Keep the same visual style but remove unnecessary expensive
-   filter transitions from the stacking surfaces. */
-.ahnros-site .feature-folder { transition: none; }
 .ahnros-site .feature-folder:hover { filter: none; }
