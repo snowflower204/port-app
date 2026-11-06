@@ -121,10 +121,7 @@ html { scroll-behavior: smooth; }
 }
 /* Folders should still stick on typical laptop screens. Only use the
    ordinary layout when the viewport is too short to show one folder. */
-@media(max-height:560px) and (min-width:701px) {
-  .ahnros-site .feature-folder { position: relative; top: auto; }
-  .ahnros-site .feature-folder:not(:first-child) { margin-top: 10px; }
-}
+/* Very short viewport fallback is handled in the stacking rules below. */
 @media(prefers-reduced-motion:reduce) {
   html { scroll-behavior: auto; }
   .ahnros-site .hero-center-logo-image { animation: none; }
@@ -132,53 +129,107 @@ html { scroll-behavior: smooth; }
   .ahnros-site .feature-folder { transform: none !important; }
 }
 
-/* =============================================================
-   Highlights: compact overlapping sticky folder stack
-   Sticky is CSS-only (no scroll handlers or JS animation).
-   Earlier tabs peek out above later folders as you scroll.
-============================================================= */
-/* Override legacy overflow-x:hidden on body: hidden can inhibit sticky. */
+/* ================================================================
+   FEATURED HIGHLIGHTS — FOLDER-BROWSING PARALLAX
+   One card stays pinned while the next slides over it.
+   Only photographs drift subtly; the sticky cards never transform.
+   No JavaScript scroll handler or React re-renders.
+================================================================ */
+
+/* The legacy body overflow-x:hidden and portfolio overflow:clip
+   can create an unexpected sticky scroll container. */
 html, body { overflow-x: clip; }
 .ahnros-site { overflow: visible; }
 .ahnros-site .featured-highlights,
 .ahnros-site .folder-grid { overflow: visible; }
 
-@media (min-width: 701px) and (min-height: 561px) {
+/* Desktop/tablet: overlap progressively, leaving each file tab
+   visible like an opened stack of scrapbook folders. */
+@media (min-width: 701px) and (min-height: 581px) {
   .ahnros-site .folder-grid {
     display: flex;
     flex-direction: column;
-    gap: 0;
     align-items: stretch;
-    padding-bottom: 40px;
+    width: 100%;
+    gap: 0;
+    padding-bottom: clamp(115px, 18vh, 185px);
   }
+
   .ahnros-site .feature-folder {
     position: sticky;
-    /* Each folder stops a little lower so older tabs stay visible. */
-    top: calc(92px + var(--folder-index) * clamp(19px, 2.7vh, 28px));
+    top: calc(126px + var(--folder-index) * clamp(37px, 5vh, 45px));
     z-index: calc(10 + var(--folder-index));
     width: 100%;
-    padding-top: 50px;
     margin: 0;
+    padding-top: 50px;
     transform: none;
-    will-change: auto;
-    transition: none;
     filter: none;
+    transition: none;
+    will-change: auto;
   }
+
   .ahnros-site .feature-folder:not(:first-child) {
-    /* Close-together scrapbook pages; NO giant blank scroll gaps. */
-    margin-top: -14px;
+    margin-top: -18px;
   }
+
   .ahnros-site .feature-folder:not(:last-child) {
     margin-bottom: 0;
   }
-  .ahnros-site .folder-body { min-height: 440px; }
-  .ahnros-site .ahn-polaroid { backface-visibility: hidden; }
+
+  .ahnros-site .folder-body {
+    min-height: clamp(390px, 50vh, 490px);
+    box-shadow: 0 11px 26px rgba(63,28,93,.13), 0 3px 8px rgba(63,28,93,.07);
+  }
+
+  .ahnros-site .ahn-polaroid {
+    backface-visibility: hidden;
+  }
 }
 
-@media (max-width: 700px), (max-height: 560px) {
+/* Enhancements only in browsers supporting scroll-linked animation.
+   Cards themselves remain perfectly stable: no transform on sticky
+   elements. The contents rise gently as each folder is browsed. */
+@keyframes ahnFolderPageReveal {
+  from { opacity: .94; translate: 0 12px; }
+  to { opacity: 1; translate: 0 0; }
+}
+@keyframes ahnFolderPhotoParallax {
+  from { translate: 0 8px; }
+  to { translate: 0 -8px; }
+}
+@supports (animation-timeline: view()) {
+  @media (min-width: 701px) and (min-height: 581px) and (prefers-reduced-motion: no-preference) {
+    .ahnros-site .feature-folder .folder-body {
+      animation: ahnFolderPageReveal linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% entry 55%;
+    }
+    .ahnros-site .feature-folder .ahn-photo-collage {
+      animation: ahnFolderPhotoParallax linear both;
+      animation-timeline: view(block);
+      animation-range: entry 0% exit 100%;
+    }
+  }
+}
+
+/* Small viewports: each folder stays fully readable in natural
+   document flow instead of covering inaccessible content. */
+@media (max-width: 700px), (max-height: 580px) {
   .ahnros-site .folder-grid { padding-bottom: 10px; }
-  .ahnros-site .feature-folder { position: relative; top: auto; }
-  .ahnros-site .feature-folder:not(:last-child) { margin-bottom: 10px; }
+  .ahnros-site .feature-folder {
+    position: relative;
+    top: auto;
+    transform: none;
+  }
+  .ahnros-site .feature-folder:not(:first-child) { margin-top: 10px; }
 }
 
 .ahnros-site .feature-folder:hover { filter: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ahnros-site .feature-folder .folder-body,
+  .ahnros-site .feature-folder .ahn-photo-collage {
+    animation: none !important;
+    translate: none !important;
+  }
+}
