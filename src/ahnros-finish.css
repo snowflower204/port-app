@@ -119,9 +119,11 @@ html { scroll-behavior: smooth; }
   .ahnros-site .identity-bubble { font-size: .58rem; padding: 7px; }
   .ahnros-site .folder-tab { width: 70%; }
 }
-@media(max-height:750px) and (min-width:701px) {
+/* Folders should still stick on typical laptop screens. Only use the
+   ordinary layout when the viewport is too short to show one folder. */
+@media(max-height:560px) and (min-width:701px) {
   .ahnros-site .feature-folder { position: relative; top: auto; }
-  .ahnros-site .feature-folder:not(:first-child) { margin-top: 5px; }
+  .ahnros-site .feature-folder:not(:first-child) { margin-top: 10px; }
 }
 @media(prefers-reduced-motion:reduce) {
   html { scroll-behavior: auto; }
@@ -129,3 +131,56 @@ html { scroll-behavior: smooth; }
   .ahn-polaroid { transition: none; }
   .ahnros-site .feature-folder { transform: none !important; }
 }
+
+/* =============================================================
+   Featured Highlights / reliable stacked-folder scroll behavior
+   The normal flow reserves a short "reading interval" after each
+   folder. When scrolled, newer sticky folders overlap older ones.
+   No JS scroll listener, transforms, or scroll-linked animations.
+============================================================= */
+
+/* Unlike hidden, clip does not introduce a scrolling ancestor that
+   can interfere with position: sticky in some browser layouts. */
+html, body { overflow-x: clip; }
+.ahnros-site { overflow: visible; }
+.ahnros-site .featured-highlights,
+.ahnros-site .folder-grid { overflow: visible; }
+
+@media (min-width: 701px) and (min-height: 561px) {
+  .ahnros-site .folder-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    padding-bottom: clamp(190px, 36vh, 350px);
+  }
+  .ahnros-site .feature-folder {
+    position: sticky;
+    top: calc(90px + var(--folder-index) * 11px);
+    z-index: calc(10 + var(--folder-index));
+    margin: 0;
+    padding-top: 50px;
+    transform: none;
+    will-change: auto;
+  }
+  .ahnros-site .feature-folder:not(:first-child) {
+    margin-top: 0;
+  }
+  .ahnros-site .feature-folder:not(:last-child) {
+    margin-bottom: clamp(125px, 24vh, 250px);
+  }
+  /* When the browser height is limited, keep the sticky folder
+     within the viewable area without disabling the whole effect. */
+  .ahnros-site .folder-body { min-height: 440px; }
+  .ahnros-site .ahn-polaroid { backface-visibility: hidden; }
+}
+
+@media (max-width: 700px), (max-height: 560px) {
+  .ahnros-site .folder-grid { padding-bottom: 10px; }
+  .ahnros-site .feature-folder:not(:last-child) { margin-bottom: 10px; }
+}
+
+/* Keep the same visual style but remove unnecessary expensive
+   filter transitions from the stacking surfaces. */
+.ahnros-site .feature-folder { transition: none; }
+.ahnros-site .feature-folder:hover { filter: none; }
