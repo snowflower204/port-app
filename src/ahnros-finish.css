@@ -137,6 +137,8 @@ html { scroll-behavior: smooth; }
    Sticky is CSS-only (no scroll handlers or JS animation).
    Earlier tabs peek out above later folders as you scroll.
 ============================================================= */
+/* Override legacy overflow-x:hidden on body: hidden can inhibit sticky. */
+html, body { overflow-x: clip; }
 .ahnros-site { overflow: visible; }
 .ahnros-site .featured-highlights,
 .ahnros-site .folder-grid { overflow: visible; }
